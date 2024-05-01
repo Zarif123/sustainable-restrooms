@@ -1,9 +1,9 @@
 import numpy as np
 import pydub
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
+import argparse
 
 def quantize(audio_signal, bits):
-    # scaler = StandardScaler()
     bit_range = (0, (2**bits)-1)
     scaler = MinMaxScaler(feature_range=bit_range)
 
@@ -25,24 +25,53 @@ def read(f):
     return a.frame_rate, y
     
 
-def write(f, sr, x):
+def write(f, sr, x, ext="mp3"):
     """numpy array to MP3"""
     channels = 2 if (x.ndim == 2 and x.shape[1] == 2) else 1
     y = np.int8(x)
     song = pydub.AudioSegment(y.tobytes(), frame_rate=sr, sample_width=2, channels=channels)
-    song.export(f, format="mp3")
+    song.export(f, format=ext)
 
-def quantize_read_write(input_file_name, input_file_extension='.mp3', bits=1):
-    original_out = f'original_signal_{input_file_name}.out'
-    quantized_out = f'quantized_signal_{input_file_name}.out'
-    output_file_name = f'{input_file_name}_quantized{input_file_extension}'
+def quantize_read_write(input_file, output, output_file_extension='mp3', bits=1):
+    input_name = input_file.split("/")[-1].split(".")[0]
 
-    _, audio_signal = read(input_file_name + input_file_extension)
+    original_out = f'{output}/original_signal_{input_name}.out'
+    quantized_out = f'{output}/quantized_signal_{bits}_{input_name}.out'
+    output_file_name = f'{output}/{input_name}_quantized_{bits}.{output_file_extension}'
+
+    _, audio_signal = read(input_file)
     np.savetxt(original_out, audio_signal, delimiter=',')
 
     quantized_signal = quantize(audio_signal, bits).astype(np.int8)
     np.savetxt(quantized_out, quantized_signal, delimiter=',', fmt="%i")
 
-    write(output_file_name, 24000, quantized_signal)
+    write(output_file_name, 24000, quantized_signal, output_file_extension)
 
-quantize_read_write('speech_1', '.mp3', bits=5)
+desc_msg = "Quantize audio files to desire bit rate"
+
+def main(): 
+    parser = argparse.ArgumentParser(description=desc_msg)
+
+    parser.add_argument("input_file", help="Audio input file")
+    parser.add_argument("output_loc", help="Location of output files")
+    parser.add_argument("-e", nargs="?", default="mp3", const="mp3", help="Output audio extension (default: mp3)")
+    parser.add_argument("-b", nargs="?", default=1, const=1, help="Bits to quantize to file to (default: 1)")
+
+    args = parser.parse_args()
+
+    input = args.input_file
+    output = args.output_loc
+    output_ext = args.e
+
+    try: 
+        num_bits = int(args.b)
+    except ValueError:
+        raise ValueError("The provided bits value cannot be converted to an integer.")
+
+
+    print(input, output, output_ext, num_bits)
+
+    quantize_read_write(input_file=input, output=output, output_file_extension=output_ext, bits=num_bits)
+
+if __name__=="__main__": 
+    main() 
