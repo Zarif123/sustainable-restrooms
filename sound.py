@@ -39,13 +39,13 @@ def quantize_read_write(input_file, output, output_file_extension='mp3', bits=1)
     quantized_out = f'{output}/quantized_signal_{bits}_{input_name}.out'
     output_file_name = f'{output}/{input_name}_quantized_{bits}.{output_file_extension}'
 
-    _, audio_signal = read(input_file)
+    frame_rate, audio_signal = read(input_file)
     np.savetxt(original_out, audio_signal, delimiter=',')
 
     quantized_signal = quantize(audio_signal, bits).astype(np.int8)
     np.savetxt(quantized_out, quantized_signal, delimiter=',', fmt="%i")
 
-    write(output_file_name, 24000, quantized_signal, output_file_extension)
+    write(output_file_name, frame_rate, quantized_signal, output_file_extension)
 
 desc_msg = "Quantize audio files to desire bit rate"
 
