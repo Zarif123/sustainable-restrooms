@@ -1,4 +1,5 @@
-from pydub import AudioSegment
+import sound 
+import audio_segment 
 
-audio = AudioSegment.from_file("shit.m4a", "m4a")
-audio.export("shit.wav", format="wav")
+input = sound.quantize_read_write(input_file="audio/speech/speech_1.mp3", output="out/speech", output_file_extension="wav", bits=3)
+audio_segment.process(input, "training_set", 500)

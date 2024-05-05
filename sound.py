@@ -16,9 +16,9 @@ def quantize(audio_signal, bits):
 
     return quantized_signal
 
-def read(f):
+def read(f, ext):
     """MP3 to numpy array"""
-    a = pydub.AudioSegment.from_mp3(f)
+    a = pydub.AudioSegment.from_file(f, ext)
     y = np.array(a.get_array_of_samples())
     if a.channels == 2:
         y = y.reshape((-1, 2))
@@ -33,19 +33,23 @@ def write(f, sr, x, ext="mp3"):
     song.export(f, format=ext)
 
 def quantize_read_write(input_file, output, output_file_extension='wav', bits=1):
-    input_name = input_file.split("/")[-1].split(".")[0]
+    input_broken = input_file.split("/")[-1].split(".")
+    input_name = input_broken[0]
+    input_ext = input_broken[1]
 
-    original_out = f'{output}/original_signal_{input_name}.out'
-    quantized_out = f'{output}/quantized_signal_{bits}_{input_name}.out'
+    # original_out = f'{output}/original_signal_{input_name}.out'
+    # quantized_out = f'{output}/quantized_signal_{bits}_{input_name}.out'
     output_file_name = f'{output}/{input_name}_quant_{bits}.{output_file_extension}'
 
-    frame_rate, audio_signal = read(input_file)
-    np.savetxt(original_out, audio_signal, delimiter=',')
+    frame_rate, audio_signal = read(input_file, input_ext)
+    # np.savetxt(original_out, audio_signal, delimiter=',')
 
     quantized_signal = quantize(audio_signal, bits).astype(np.int8)
-    np.savetxt(quantized_out, quantized_signal, delimiter=',', fmt="%i")
+    # np.savetxt(quantized_out, quantized_signal, delimiter=',', fmt="%i")
 
     write(output_file_name, frame_rate, quantized_signal, output_file_extension)
+
+    return output_file_name
 
 desc_msg = "Quantize audio files to desire bit rate"
 
