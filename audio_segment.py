@@ -1,9 +1,12 @@
 from pydub import AudioSegment
 import argparse
 
-def process(input, output, ms=1000):
-    input_name = input.split("/")[-1].split(".")[0]
-    song = AudioSegment.from_mp3(input)
+def process(input, output, ms=500):
+    input_broken = input.split("/")[-1].split(".")
+    input_name = input_broken[0]
+    input_ext = input_broken[1]
+
+    song = AudioSegment.from_file(input, input_ext)
 
     i = 0
     length = len(song)
@@ -24,7 +27,7 @@ def main():
 
     parser.add_argument("input_file", help="Audio input file")
     parser.add_argument("output_loc", help="Directory for output files")
-    parser.add_argument("-t", nargs="?", default=1000, const=1000, help="Length of segmented audio file in milliseconds (default: 1000)")
+    parser.add_argument("-t", nargs="?", default=500, const=500, help="Length of segmented audio file in milliseconds (default: 500)")
 
     args = parser.parse_args()
 
