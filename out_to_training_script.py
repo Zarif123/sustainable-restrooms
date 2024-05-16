@@ -2,10 +2,13 @@ import os
 from pathlib import Path
 import sound
 
-out_path = Path.cwd()/'out'
-urination_out_path = out_path/'urination'
-
-for file in os.listdir(urination_out_path):
-    input_file = os.path.join(f'out/urination/',file)
-    output_file = 'training_set/urination'
-    sound.quantize_read_write(input_file=input_file, output=output_file, output_file_extension='wav', bits=3)
+def out_to_training(class_type):
+    out_path = Path.cwd()/'out'
+    class_out_path = out_path/f'{class_type}'
+    for file in os.listdir(class_out_path):
+        input_file = os.path.join(f'out/{class_type}/',file)
+        output_file = f'training_set/{class_type}'
+        sound.quantize_read_write(input_file=input_file, output=output_file, output_file_extension='wav', bits=3)
+    print("Done")
+    
+out_to_training('defecation')
