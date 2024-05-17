@@ -22,5 +22,5 @@ def out_to_training(class_type, bits):
     
 delete_files(folder='urination')
 delete_files(folder='defecation')
-out_to_training(class_type='urination', bits=2)
-out_to_training(class_type='defecation', bits=2)
+out_to_training(class_type='urination', bits=1)
+out_to_training(class_type='defecation', bits=1)
