@@ -1,7 +1,7 @@
 .venv
 .out
 __pycache__/
-training_set\defecation
-training_set\silence
-training_set\speech
-training_set\urination
+training_set/defecation/
+training_set/silence/
+training_set/speech/
+training_set/urination/
