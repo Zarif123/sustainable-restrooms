@@ -12,7 +12,7 @@ def quantize(audio_signal, bits):
     quantized_signal = scaler.fit_transform(audio_signal.reshape(-1, 1))
     
     # Clip values to ensure they are within the valid range [0, 3]
-    quantized_signal = np.clip(quantized_signal, 0, (2**5)-1)
+    quantized_signal = np.clip(quantized_signal, 0, (2**bits)-1)
 
     return quantized_signal
 
